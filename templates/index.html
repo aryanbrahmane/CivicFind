@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CivicFind — Intelligent Information Retrieval for Government Schemes</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js for IR Metrics Visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Custom Style -->
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            civic: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              200: '#bae0fd',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+              800: '#0c4a6e',
+              900: '#082f49',
+              dark: '#0a192f'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans antialiased">
+
+  <!-- Top Announcement / Lab Banner -->
+  <div class="bg-gradient-to-r from-slate-900 via-civic-900 to-slate-900 text-slate-200 text-xs py-1.5 px-4 border-b border-slate-700">
+    <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+      <div class="flex items-center space-x-2">
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+          <i class="fa-solid fa-graduation-cap mr-1"></i> IR LAB WORKBENCH
+        </span>
+        <span class="text-slate-300">Information Retrieval Project: Maharashtra State & Central Government Scheme Discovery</span>
+      </div>
+      <div class="flex items-center space-x-4 text-[11px] text-slate-400">
+        <span><i class="fa-solid fa-database mr-1 text-sky-400"></i> 174 Indexed Schemes</span>
+        <span><i class="fa-solid fa-code-compare mr-1 text-emerald-400"></i> 5 IR Models</span>
+        <span><i class="fa-solid fa-chart-line mr-1 text-purple-400"></i> P@K & NDCG Evaluation</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Navigation Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <!-- Brand Logo -->
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('search')">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-civic-700 to-sky-500 flex items-center justify-center text-white shadow-md shadow-sky-500/20">
+            <i class="fa-solid fa-landmark-dome text-xl"></i>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="text-xl font-bold tracking-tight text-slate-900">CIVIC<span class="text-sky-600">FIND</span></span>
+              <span class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 bg-sky-100 text-sky-800 rounded">v2.0 IR</span>
+            </div>
+            <p class="text-[11px] text-slate-500 -mt-1">Intelligent Public Information Retrieval</p>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="hidden md:flex space-x-1 lg:space-x-2" id="navTabs">
+          <button onclick="switchTab('search')" id="tab-btn-search" class="nav-tab active-tab px-3.5 py-2 rounded-lg text-sm font-medium transition-all flex items-center space-x-2 text-slate-700 hover:text-sky-600">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>Search & Retrieval</span>
+          </button>
+          <button onclick="switchTab('inspector')" id="tab-btn-inspector" class="nav-tab px-3.5 py-2 rounded-lg text-sm font-medium transition-all flex items-center space-x-2 text-slate-700 hover:text-sky-600">
+            <i class="fa-solid fa-microscope text-purple-600"></i>
+            <span>IR Inspector</span>
+          </button>
+          <button onclick="switchTab('evaluation')" id="tab-btn-evaluation" class="nav-tab px-3.5 py-2 rounded-lg text-sm font-medium transition-all flex items-center space-x-2 text-slate-700 hover:text-sky-600">
+            <i class="fa-solid fa-chart-pie text-emerald-600"></i>
+            <span>Evaluation & Benchmark</span>
+          </button>
+          <button onclick="switchTab('directory')" id="tab-btn-directory" class="nav-tab px-3.5 py-2 rounded-lg text-sm font-medium transition-all flex items-center space-x-2 text-slate-700 hover:text-sky-600">
+            <i class="fa-solid fa-book-bookmark text-amber-600"></i>
+            <span>Schemes Catalog</span>
+          </button>
+          <button onclick="switchTab('viva')" id="tab-btn-viva" class="nav-tab px-3.5 py-2 rounded-lg text-sm font-medium transition-all flex items-center space-x-2 text-slate-700 hover:text-sky-600">
+            <i class="fa-solid fa-graduation-cap text-indigo-600"></i>
+            <span>IR Lab Manual</span>
+          </button>
+        </nav>
+
+        <!-- Right Action Button / Quick Index Stats -->
+        <div class="flex items-center space-x-3">
+          <button onclick="triggerSampleSearch('Scholarships for engineering students in Maharashtra')" class="hidden sm:inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 transition">
+            <i class="fa-solid fa-bolt mr-1.5 text-amber-500"></i> Quick Demo
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ============================================================== -->
+    <!-- TAB 1: SEARCH & RETRIEVAL ENGINE                              -->
+    <!-- ============================================================== -->
+    <section id="view-search" class="tab-view active-view space-y-6">
+
+      <!-- Hero & Search Input Section -->
+      <div class="bg-gradient-to-br from-slate-900 via-civic-900 to-slate-800 rounded-2xl shadow-xl text-white p-6 sm:p-8 relative overflow-hidden">
+        <!-- Background decoration shapes -->
+        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute left-1/3 -top-10 w-48 h-48 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-3xl mx-auto text-center space-y-3 mb-6">
+          <div class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-sky-300 border border-white/10 backdrop-blur-sm">
+            <i class="fa-solid fa-sparkles text-amber-300"></i>
+            <span>Natural Language Government Scheme Discovery</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
+            Find Public Schemes & Services in Seconds
+          </h1>
+          <p class="text-slate-300 text-sm sm:text-base">
+            Search using conversational natural language. CivicFind tokenizes, indexes, and ranks 170+ welfare schemes using advanced Information Retrieval algorithms.
+          </p>
+        </div>
+
+        <!-- Search Bar with Model Controls -->
+        <div class="max-w-3xl mx-auto relative z-10 space-y-3">
+          <form id="searchForm" onsubmit="handleSearch(event)" class="relative">
+            <div class="relative flex items-center bg-white rounded-xl shadow-lg overflow-hidden border-2 border-white/20 focus-within:border-sky-400 transition-all">
+              <div class="pl-4 text-slate-400">
+                <i class="fa-solid fa-magnifying-glass text-lg"></i>
+              </div>
+              <input 
+                type="text" 
+                id="searchQueryInput" 
+                class="w-full py-4 pl-3 pr-28 text-slate-800 placeholder-slate-400 bg-transparent focus:outline-none text-base" 
+                placeholder="e.g. Scholarships for engineering students in Maharashtra, Subsidies for farmers, Hospital cashless surgery..."
+                autocomplete="off"
+                oninput="handleAutocomplete(this.value)"
+              >
+              <!-- Clear Input Button -->
+              <button type="button" id="clearSearchBtn" onclick="clearSearch()" class="hidden pr-2 text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-sm"></i>
+              </button>
+              <!-- Search Submit Button -->
+              <button 
+                type="submit" 
+                class="mr-2 px-5 py-2.5 bg-gradient-to-r from-sky-600 to-civic-700 hover:from-sky-700 hover:to-civic-800 text-white font-semibold rounded-lg shadow-md transition flex items-center space-x-1.5 text-sm"
+              >
+                <span>Search</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+              </button>
+            </div>
+
+            <!-- Autocomplete Suggestion Dropdown -->
+            <div id="autocompleteDropdown" class="hidden absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-xl border border-slate-200 z-50 overflow-hidden divide-y divide-slate-100">
+              <!-- Dynamically populated -->
+            </div>
+          </form>
+
+          <!-- Quick Query Chips -->
+          <div class="flex items-center flex-wrap gap-1.5 pt-1 text-xs">
+            <span class="text-slate-300 font-medium mr-1"><i class="fa-solid fa-lightbulb text-amber-400"></i> Try queries:</span>
+            <button onclick="triggerSampleSearch('Scholarships for undergraduate college engineering students in Maharashtra')" class="query-chip bg-white/10 hover:bg-white/20 text-slate-200 px-2.5 py-1 rounded-full transition border border-white/10">🎓 Engineering Scholarships</button>
+            <button onclick="triggerSampleSearch('Subsidies and loans available for small farmers in Maharashtra')" class="query-chip bg-white/10 hover:bg-white/20 text-slate-200 px-2.5 py-1 rounded-full transition border border-white/10">🌾 Farmer Subsidies</button>
+            <button onclick="triggerSampleSearch('Cashless hospital surgery and medical insurance schemes')" class="query-chip bg-white/10 hover:bg-white/20 text-slate-200 px-2.5 py-1 rounded-full transition border border-white/10">🏥 Cashless Health Cover</button>
+            <button onclick="triggerSampleSearch('Financial assistance monthly grant schemes for women in Maharashtra')" class="query-chip bg-white/10 hover:bg-white/20 text-slate-200 px-2.5 py-1 rounded-full transition border border-white/10">👩 Ladki Bahin & Women Aid</button>
+            <button onclick="triggerSampleSearch('Collateral free business loans for micro small enterprises')" class="query-chip bg-white/10 hover:bg-white/20 text-slate-200 px-2.5 py-1 rounded-full transition border border-white/10">💼 MSME Mudra Loans</button>
+            <button onclick="triggerSampleSearch('Rooftop solar subsidy free electricity for residential homes')" class="query-chip bg-white/10 hover:bg-white/20 text-slate-200 px-2.5 py-1 rounded-full transition border border-white/10">☀️ Rooftop Solar Subsidies</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- IR Model Selector & Filter Controls Toolbar -->
+      <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
+        
+        <!-- Left: IR Model Picker -->
+        <div class="flex flex-wrap items-center gap-3">
+          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center">
+            <i class="fa-solid fa-sliders text-sky-600 mr-1.5"></i> IR Model:
+          </label>
+          <div class="relative">
+            <select id="modelSelector" onchange="handleModelChange()" class="text-xs sm:text-sm font-semibold bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 pr-8 text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500">
+              <option value="bm25" selected>🔥 Okapi BM25 Probabilistic Model (Recommended)</option>
+              <option value="vsm">📐 Vector Space Model (TF-IDF Cosine Similarity)</option>
+              <option value="semantic">🧠 Latent Semantic Indexing (Dense SVD Cosine)</option>
+              <option value="hybrid">⚡ Hybrid Retrieval (BM25 + LSI Semantic)</option>
+              <option value="boolean">⚙️ Classical Boolean Retrieval (AND / OR / NOT)</option>
+            </select>
+          </div>
+
+          <!-- Query Expansion Toggle -->
+          <label class="flex items-center space-x-2 text-xs sm:text-sm text-slate-700 cursor-pointer bg-slate-50 px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-100 transition">
+            <input type="checkbox" id="queryExpansionCheckbox" class="rounded text-sky-600 focus:ring-sky-500 h-4 w-4">
+            <span class="font-medium">Query Expansion</span>
+            <span class="text-[10px] text-slate-500" title="Automatically expands query with domain synonyms (e.g. student -> scholarship, higher education)">
+              <i class="fa-solid fa-circle-question"></i>
+            </span>
+          </label>
+        </div>
+
+        <!-- Right: Category & Jurisdiction Filters -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Category Filter -->
+          <select id="categoryFilter" onchange="handleFilterChange()" class="text-xs bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500">
+            <option value="All">All Categories</option>
+            <option value="Education">Education & Scholarships</option>
+            <option value="Agriculture">Agriculture & Farming</option>
+            <option value="Healthcare">Healthcare & Medical</option>
+            <option value="Women and Child Welfare">Women & Child Welfare</option>
+            <option value="Employment and Skill Development">Employment & Skills</option>
+            <option value="Housing and Urban Development">Housing & Urban</option>
+            <option value="Entrepreneurship and MSME">Entrepreneurship & MSME</option>
+            <option value="Social Security and Pensions">Social Security & Pensions</option>
+            <option value="Disability Welfare">Disability Welfare</option>
+            <option value="Public Services and Citizen Welfare">Public Services</option>
+          </select>
+
+          <!-- Level Filter -->
+          <select id="levelFilter" onchange="handleFilterChange()" class="text-xs bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500">
+            <option value="All">All Jurisdictions</option>
+            <option value="Maharashtra State">Maharashtra State</option>
+            <option value="Central">Central Government</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- "Did you mean?" Spelling Correction Banner -->
+      <div id="spellingBanner" class="hidden bg-amber-50 border border-amber-200 text-amber-900 rounded-xl p-3 flex items-center justify-between text-xs sm:text-sm">
+        <div class="flex items-center space-x-2">
+          <i class="fa-solid fa-spell-check text-amber-600 text-base"></i>
+          <span>Did you mean: <strong id="spellingSuggestionText" class="cursor-pointer text-sky-700 underline font-semibold" onclick="applySpellingSuggestion()">...</strong>?</span>
+        </div>
+        <button onclick="dismissSpelling()" class="text-amber-700 hover:text-amber-900"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <!-- Rocchio Relevance Feedback Active Banner -->
+      <div id="rocchioFeedbackBanner" class="hidden bg-emerald-50 border border-emerald-300 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-emerald-950 text-xs sm:text-sm">
+        <div class="flex items-center space-x-2">
+          <span class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs">
+            <i class="fa-solid fa-arrows-spin"></i>
+          </span>
+          <span>
+            Relevance Feedback: <strong id="relevantCountSpan">0</strong> marked relevant, <strong id="nonRelevantCountSpan">0</strong> non-relevant.
+          </span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button onclick="applyRocchioRelevanceFeedback()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-xs shadow transition flex items-center space-x-1">
+            <i class="fa-solid fa-calculator"></i>
+            <span>Re-rank via Rocchio Feedback</span>
+          </button>
+          <button onclick="resetFeedbackSelection()" class="px-2.5 py-1.5 text-xs text-slate-600 hover:text-slate-800 bg-white border border-slate-300 rounded-lg">
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <!-- Query Diagnostics Info Bar -->
+      <div id="searchMetaBar" class="hidden bg-slate-100 rounded-xl px-4 py-2.5 text-xs text-slate-600 flex flex-wrap items-center justify-between gap-2 border border-slate-200">
+        <div class="flex items-center flex-wrap gap-2">
+          <span id="resultsCountSpan" class="font-semibold text-slate-800">Found 0 schemes</span>
+          <span class="text-slate-400">|</span>
+          <span id="execTimeSpan"><i class="fa-solid fa-bolt text-amber-500 mr-1"></i>0 ms</span>
+          <span class="text-slate-400">|</span>
+          <span id="modelBadgeSpan" class="px-2 py-0.5 rounded font-mono bg-sky-100 text-sky-800 border border-sky-200">Okapi BM25</span>
+        </div>
+        <div id="expandedTermsSpan" class="hidden flex items-center space-x-1 text-slate-500 text-[11px]">
+          <i class="fa-solid fa-diagram-project text-purple-500"></i>
+          <span>Expanded terms: <span id="expandedTermsList" class="font-mono text-purple-700 font-semibold"></span></span>
+        </div>
+      </div>
+
+      <!-- Search Results Grid / List -->
+      <div id="searchResultsContainer" class="space-y-4">
+        <!-- Initial Blank Slate / Welcome Banner -->
+        <div id="emptySearchSlate" class="bg-white rounded-2xl p-10 border border-slate-200 text-center space-y-4 shadow-sm">
+          <div class="w-16 h-16 mx-auto rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center text-2xl shadow-inner">
+            <i class="fa-solid fa-hand-holding-hand"></i>
+          </div>
+          <div class="max-w-md mx-auto space-y-1">
+            <h3 class="text-lg font-bold text-slate-800">Search Over 170+ Government Schemes</h3>
+            <p class="text-xs text-slate-500">
+              Type keywords, questions, or eligibility profiles in English. The system calculates TF-IDF & BM25 relevance scores and ranks matching documents.
+            </p>
+          </div>
+          <div class="pt-2 flex justify-center">
+            <button onclick="triggerSampleSearch('Scholarships for engineering college students in Maharashtra')" class="text-xs px-4 py-2 bg-sky-50 hover:bg-sky-100 text-sky-700 font-semibold rounded-lg border border-sky-200 transition">
+              <i class="fa-solid fa-play text-[10px] mr-1"></i> Run Sample Engineering Search
+            </button>
+          </div>
+        </div>
+
+        <!-- Result Cards will be rendered here dynamically -->
+      </div>
+
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- TAB 2: IR LAB INSPECTOR (UNDER THE HOOD)                      -->
+    <!-- ============================================================== -->
+    <section id="view-inspector" class="tab-view space-y-6">
+
+      <!-- View Header -->
+      <div class="bg-gradient-to-r from-purple-900 via-slate-900 to-indigo-950 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+        <div class="max-w-3xl space-y-2">
+          <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+            <i class="fa-solid fa-microchip"></i>
+            <span>IR PIPELINE EXPLORER</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Under The Hood: Information Retrieval Engine</h2>
+          <p class="text-purple-200 text-xs sm:text-sm">
+            Inspect the exact mathematical and computational processes: text preprocessing pipelines, tokenization, stemming, inverted index postings, and vector representations.
+          </p>
+        </div>
+      </div>
+
+      <!-- Live Interactive Preprocessing Pipeline Stepper -->
+      <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-bold text-slate-800 flex items-center">
+            <i class="fa-solid fa-filter text-sky-600 mr-2"></i> Interactive Text Preprocessing Playground
+          </h3>
+          <span class="text-xs text-slate-400">Step-by-step Transformation Trace</span>
+        </div>
+
+        <div class="flex gap-2">
+          <input 
+            type="text" 
+            id="playgroundInput" 
+            class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500" 
+            placeholder="Type any phrase to test preprocessing (e.g. 'Students are applying for educational scholarships in Maharashtra')..."
+            value="Students are applying for educational scholarships in Maharashtra"
+          >
+          <button onclick="runPlaygroundPreprocessing()" class="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-semibold shadow transition whitespace-nowrap">
+            Preprocess
+          </button>
+        </div>
+
+        <!-- 5-Step Pipeline Visualizer -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-2" id="pipelineStepsContainer">
+          <!-- Step 1: Input & Lowercasing -->
+          <div class="pipeline-step-card bg-slate-50 border border-slate-200 rounded-xl p-3">
+            <div class="flex items-center justify-between text-xs font-bold text-slate-600 mb-1">
+              <span>1. Lowercasing</span>
+              <span class="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded">Case Fold</span>
+            </div>
+            <p id="pipeLowercased" class="text-xs text-slate-800 font-mono break-words">...</p>
+          </div>
+
+          <!-- Step 2: Tokenization -->
+          <div class="pipeline-step-card bg-slate-50 border border-slate-200 rounded-xl p-3">
+            <div class="flex items-center justify-between text-xs font-bold text-sky-700 mb-1">
+              <span>2. Tokenization</span>
+              <span class="text-[10px] bg-sky-100 text-sky-800 px-1.5 py-0.5 rounded">Tokens</span>
+            </div>
+            <div id="pipeTokens" class="flex flex-wrap gap-1 text-[11px] font-mono">...</div>
+          </div>
+
+          <!-- Step 3: Stopword Filtering -->
+          <div class="pipeline-step-card bg-slate-50 border border-slate-200 rounded-xl p-3">
+            <div class="flex items-center justify-between text-xs font-bold text-amber-700 mb-1">
+              <span>3. Stopwords Removed</span>
+              <span class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">Filtered</span>
+            </div>
+            <div id="pipeNoStopwords" class="flex flex-wrap gap-1 text-[11px] font-mono">...</div>
+          </div>
+
+          <!-- Step 4: Lemmatization -->
+          <div class="pipeline-step-card bg-slate-50 border border-slate-200 rounded-xl p-3">
+            <div class="flex items-center justify-between text-xs font-bold text-emerald-700 mb-1">
+              <span>4. Lemmatization</span>
+              <span class="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded">WordNet</span>
+            </div>
+            <div id="pipeLemmatized" class="flex flex-wrap gap-1 text-[11px] font-mono">...</div>
+          </div>
+
+          <!-- Step 5: Stemming -->
+          <div class="pipeline-step-card bg-slate-50 border border-slate-200 rounded-xl p-3">
+            <div class="flex items-center justify-between text-xs font-bold text-purple-700 mb-1">
+              <span>5. Porter Stemming</span>
+              <span class="text-[10px] bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded">Stem</span>
+            </div>
+            <div id="pipeStemmed" class="flex flex-wrap gap-1 text-[11px] font-mono">...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inverted Index Postings Explorer -->
+      <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-bold text-slate-800 flex items-center">
+            <i class="fa-solid fa-list-check text-purple-600 mr-2"></i> Inverted Index Postings List Explorer
+          </h3>
+          <span class="text-xs text-slate-500">Dictionary lookup for any vocabulary term</span>
+        </div>
+
+        <p class="text-xs text-slate-600">
+          Enter any term to inspect its Positional Postings List: Document Frequency ($df$), Collection Frequency ($cf$), Inverse Document Frequency ($IDF$), and document occurrences with token positions.
+        </p>
+
+        <div class="flex gap-2 max-w-lg">
+          <input 
+            type="text" 
+            id="postingsLookupInput" 
+            class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500" 
+            placeholder="e.g. scholarship, farmer, maharashtra, hospital, credit..."
+            value="scholarship"
+          >
+          <button onclick="inspectTermPostings()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-semibold shadow transition whitespace-nowrap">
+            Inspect Term
+          </button>
+        </div>
+
+        <!-- Term Statistics Cards -->
+        <div id="termStatsRow" class="hidden grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+          <div class="bg-purple-50 border border-purple-200 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-purple-600 uppercase font-bold">Document Frequency (df)</div>
+            <div id="termDfVal" class="text-xl font-extrabold text-purple-900 mt-0.5">0</div>
+          </div>
+          <div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-sky-600 uppercase font-bold">Collection Frequency (cf)</div>
+            <div id="termCfVal" class="text-xl font-extrabold text-sky-900 mt-0.5">0</div>
+          </div>
+          <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-emerald-600 uppercase font-bold">IDF Weight</div>
+            <div id="termIdfVal" class="text-xl font-extrabold text-emerald-900 mt-0.5">0.00</div>
+          </div>
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-amber-600 uppercase font-bold">Total Collection Docs</div>
+            <div id="termTotalDocsVal" class="text-xl font-extrabold text-amber-900 mt-0.5">174</div>
+          </div>
+        </div>
+
+        <!-- Postings Table -->
+        <div id="postingsTableWrapper" class="hidden border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200 text-xs">
+              <thead class="bg-slate-50 text-slate-600 font-semibold">
+                <tr>
+                  <th class="px-4 py-2 text-left">Document ID</th>
+                  <th class="px-4 py-2 text-left">Scheme Name</th>
+                  <th class="px-4 py-2 text-left">Category</th>
+                  <th class="px-4 py-2 text-center">Term Frequency (tf)</th>
+                  <th class="px-4 py-2 text-left">Word Positions in Document</th>
+                </tr>
+              </thead>
+              <tbody id="postingsTableBody" class="divide-y divide-slate-100 bg-white">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Collection Global Statistics Dashboard -->
+      <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <h3 class="text-base font-bold text-slate-800 flex items-center">
+          <i class="fa-solid fa-chart-simple text-sky-600 mr-2"></i> Collection Inverted Index Metrics
+        </h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center" id="indexGlobalStatsContainer">
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+            <div class="text-xs text-slate-500 font-medium">Total Indexed Documents</div>
+            <div id="statTotalDocs" class="text-2xl font-bold text-slate-900 mt-1">174</div>
+          </div>
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+            <div class="text-xs text-slate-500 font-medium">Unique Vocabulary Terms</div>
+            <div id="statVocabSize" class="text-2xl font-bold text-slate-900 mt-1">2,576</div>
+          </div>
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+            <div class="text-xs text-slate-500 font-medium">Total Postings Tokens</div>
+            <div id="statTotalTokens" class="text-2xl font-bold text-slate-900 mt-1">18,828</div>
+          </div>
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+            <div class="text-xs text-slate-500 font-medium">Average Document Length (L_avg)</div>
+            <div id="statAvgDocLen" class="text-2xl font-bold text-slate-900 mt-1">108.2 tokens</div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- TAB 3: IR EVALUATION & BENCHMARK DASHBOARD                     -->
+    <!-- ============================================================== -->
+    <section id="view-evaluation" class="tab-view space-y-6">
+
+      <!-- View Header -->
+      <div class="bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-900 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+        <div class="max-w-3xl space-y-2">
+          <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            <i class="fa-solid fa-square-poll-vertical"></i>
+            <span>IR EVALUATION BENCHMARK SUITE</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">System Retrieval Effectiveness & Metrics</h2>
+          <p class="text-emerald-200 text-xs sm:text-sm">
+            Empirical comparative benchmark over 12 ground-truth test queries evaluating Precision@K, Recall@K, F1-Score, Mean Average Precision (MAP), MRR, and NDCG@K across all models.
+          </p>
+        </div>
+        <div class="mt-4">
+          <button onclick="runSystemEvaluation()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs shadow-lg transition flex items-center space-x-2">
+            <i class="fa-solid fa-play"></i>
+            <span>Run Benchmark Evaluation</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards (for Top Model) -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="kpiMetricsCards">
+        <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm text-center">
+          <div class="text-xs font-semibold text-slate-500">Mean Average Precision (MAP)</div>
+          <div id="kpiMapVal" class="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-1">0.6445</div>
+          <p class="text-[11px] text-slate-400 mt-1">Area under Precision-Recall curve</p>
+        </div>
+        <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm text-center">
+          <div class="text-xs font-semibold text-slate-500">Mean NDCG@10</div>
+          <div id="kpiNdcgVal" class="text-2xl sm:text-3xl font-extrabold text-sky-600 mt-1">0.8054</div>
+          <p class="text-[11px] text-slate-400 mt-1">Normalized Graded Relevance</p>
+        </div>
+        <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm text-center">
+          <div class="text-xs font-semibold text-slate-500">Mean Precision@5 (P@5)</div>
+          <div id="kpiP5Val" class="text-2xl sm:text-3xl font-extrabold text-purple-600 mt-1">0.6167</div>
+          <p class="text-[11px] text-slate-400 mt-1">Relevance in Top-5 results</p>
+        </div>
+        <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm text-center">
+          <div class="text-xs font-semibold text-slate-500">Mean Reciprocal Rank (MRR)</div>
+          <div id="kpiMrrVal" class="text-2xl sm:text-3xl font-extrabold text-amber-600 mt-1">0.9583</div>
+          <p class="text-[11px] text-slate-400 mt-1">Reciprocal rank of first hit</p>
+        </div>
+      </div>
+
+      <!-- Interactive Chart.js Comparative Bar Chart -->
+      <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-bold text-slate-800 flex items-center">
+            <i class="fa-solid fa-chart-column text-emerald-600 mr-2"></i> IR Model Performance Comparison
+          </h3>
+          <span class="text-xs text-slate-500 font-mono">VSM vs BM25 vs Semantic vs Hybrid vs Boolean</span>
+        </div>
+        <div class="w-full h-80 relative">
+          <canvas id="evalChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Models Summary Metrics Table -->
+      <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <h3 class="text-base font-bold text-slate-800 flex items-center">
+          <i class="fa-solid fa-table text-sky-600 mr-2"></i> Macro-Averaged Evaluation Matrix
+        </h3>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-slate-200 text-xs">
+            <thead class="bg-slate-50 text-slate-700 font-bold uppercase text-[11px]">
+              <tr>
+                <th class="px-4 py-3 text-left">Model Name</th>
+                <th class="px-3 py-3 text-center">P@1</th>
+                <th class="px-3 py-3 text-center">P@5</th>
+                <th class="px-3 py-3 text-center">P@10</th>
+                <th class="px-3 py-3 text-center">Recall@5</th>
+                <th class="px-3 py-3 text-center">F1@5</th>
+                <th class="px-3 py-3 text-center text-emerald-700">MAP</th>
+                <th class="px-3 py-3 text-center text-sky-700">NDCG@5</th>
+                <th class="px-3 py-3 text-center text-sky-700">NDCG@10</th>
+                <th class="px-3 py-3 text-center">MRR</th>
+              </tr>
+            </thead>
+            <tbody id="modelsSummaryTableBody" class="divide-y divide-slate-100 bg-white">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Per-Query Detailed Benchmark Breakdown Table -->
+      <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <h3 class="text-base font-bold text-slate-800 flex items-center">
+          <i class="fa-solid fa-list-ol text-purple-600 mr-2"></i> Query-by-Query Performance (Okapi BM25 Benchmark)
+        </h3>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-slate-200 text-xs">
+            <thead class="bg-slate-50 text-slate-700 font-semibold">
+              <tr>
+                <th class="px-3 py-2 text-left">QID</th>
+                <th class="px-4 py-2 text-left">Test Query Text</th>
+                <th class="px-3 py-2 text-center">Category</th>
+                <th class="px-3 py-2 text-center">Relevant Docs</th>
+                <th class="px-3 py-2 text-center">P@5</th>
+                <th class="px-3 py-2 text-center">Recall@5</th>
+                <th class="px-3 py-2 text-center font-bold text-emerald-700">AP</th>
+                <th class="px-3 py-2 text-center font-bold text-sky-700">NDCG@10</th>
+                <th class="px-3 py-2 text-center">RR</th>
+              </tr>
+            </thead>
+            <tbody id="perQueryTableBody" class="divide-y divide-slate-100 bg-white font-mono">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- TAB 4: SCHEMES CATALOG / DOCUMENT STORE                       -->
+    <!-- ============================================================== -->
+    <section id="view-directory" class="tab-view space-y-6">
+
+      <!-- View Header -->
+      <div class="bg-gradient-to-r from-amber-950 via-slate-900 to-orange-950 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+        <div class="max-w-3xl space-y-2">
+          <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            <i class="fa-solid fa-folder-open"></i>
+            <span>PUBLIC SERVICE DOCUMENT REPOSITORY</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Government Schemes Catalog</h2>
+          <p class="text-amber-200 text-xs sm:text-sm">
+            Explore all 174 indexed government schemes spanning Maharashtra State welfare programs and Central Government flagship initiatives.
+          </p>
+        </div>
+      </div>
+
+      <!-- Filters & Catalog Search -->
+      <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center space-x-2 flex-grow max-w-md">
+          <input 
+            type="text" 
+            id="catalogSearchInput" 
+            oninput="handleCatalogFilter()" 
+            class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500" 
+            placeholder="Filter catalog by scheme title or keywords..."
+          >
+        </div>
+        <div class="flex items-center space-x-2">
+          <select id="catalogCategorySelect" onchange="handleCatalogFilter()" class="text-xs bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-2 text-slate-700">
+            <option value="All">All Categories</option>
+            <!-- Populated via API -->
+          </select>
+          <select id="catalogLevelSelect" onchange="handleCatalogFilter()" class="text-xs bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-2 text-slate-700">
+            <option value="All">All Jurisdictions</option>
+            <option value="Maharashtra State">Maharashtra State</option>
+            <option value="Central">Central</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Catalog Table -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-slate-200 text-xs">
+            <thead class="bg-slate-50 text-slate-700 font-bold uppercase text-[11px]">
+              <tr>
+                <th class="px-4 py-3 text-left">ID</th>
+                <th class="px-4 py-3 text-left">Scheme Name</th>
+                <th class="px-4 py-3 text-left">Category</th>
+                <th class="px-4 py-3 text-left">Jurisdiction</th>
+                <th class="px-4 py-3 text-left">Department</th>
+                <th class="px-4 py-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="catalogTableBody" class="divide-y divide-slate-100 bg-white">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+        <!-- Pagination footer -->
+        <div class="bg-slate-50 px-4 py-3 border-t border-slate-200 flex items-center justify-between text-xs text-slate-600">
+          <span id="catalogPaginationInfo">Showing 1 to 20 of 174 schemes</span>
+          <div class="flex items-center space-x-1">
+            <button onclick="changeCatalogPage(-1)" id="catalogPrevBtn" class="px-3 py-1 bg-white border border-slate-300 rounded hover:bg-slate-100 disabled:opacity-50">Previous</button>
+            <span id="catalogCurrentPage" class="px-3 py-1 font-semibold text-slate-800">1</span>
+            <button onclick="changeCatalogPage(1)" id="catalogNextBtn" class="px-3 py-1 bg-white border border-slate-300 rounded hover:bg-slate-100 disabled:opacity-50">Next</button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- TAB 5: IR THEORY & LAB VIVA GUIDE                              -->
+    <!-- ============================================================== -->
+    <section id="view-viva" class="tab-view space-y-6">
+
+      <!-- View Header -->
+      <div class="bg-gradient-to-r from-indigo-950 via-slate-900 to-blue-950 rounded-2xl p-6 sm:p-8 text-white shadow-xl space-y-2">
+        <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+          <i class="fa-solid fa-graduation-cap"></i>
+          <span>ACADEMIC LAB VIVA VOCE PREPARATION</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Information Retrieval Theory & Viva Guide</h2>
+        <p class="text-indigo-200 text-xs sm:text-sm">
+          Complete mathematical reference, formulas, algorithms, and viva questions explaining how CivicFind implements modern Information Retrieval.
+        </p>
+      </div>
+
+      <!-- Quick Cards Grid for Key Concepts -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Card 1: Text Preprocessing -->
+        <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm space-y-3">
+          <div class="w-10 h-10 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center font-bold text-lg">
+            1
+          </div>
+          <h4 class="font-bold text-slate-900 text-base">Text Preprocessing Pipeline</h4>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Converts raw unstructured text into canonical indexable tokens:
+          </p>
+          <ul class="text-xs text-slate-600 space-y-1 list-disc list-inside">
+            <li><strong>Tokenization:</strong> Regular expression parsing of alphanumeric terms.</li>
+            <li><strong>Case Folding:</strong> Lowercasing to ensure case insensitivity.</li>
+            <li><strong>Stop-word Removal:</strong> Removes high-frequency grammatical words (NLTK + custom domain stopwords).</li>
+            <li><strong>Lemmatization:</strong> WordNet POS-aware morphological root extraction.</li>
+            <li><strong>Stemming:</strong> Porter Stemmer suffix reduction algorithm.</li>
+          </ul>
+        </div>
+
+        <!-- Card 2: Inverted Index -->
+        <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm space-y-3">
+          <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-lg">
+            2
+          </div>
+          <h4 class="font-bold text-slate-900 text-base">Positional Inverted Index</h4>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Data structure mapping each vocabulary term to its postings list:
+          </p>
+          <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 font-mono text-[11px] text-slate-700">
+            term &rarr; { doc_id: { tf: count, positions: [p1, p2, ...] } }
+          </div>
+          <p class="text-xs text-slate-600">
+            Enables $O(1)$ dictionary lookups, efficient phrase queries, and rapid Boolean set intersections.
+          </p>
+        </div>
+
+        <!-- Card 3: TF-IDF & Cosine Similarity (VSM) -->
+        <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm space-y-3">
+          <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg">
+            3
+          </div>
+          <h4 class="font-bold text-slate-900 text-base">Vector Space Model (TF-IDF)</h4>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Represents documents and queries as vectors in $V$-dimensional space:
+          </p>
+          <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 font-mono text-[11px] text-slate-700 space-y-1">
+            <div>TF(t, d) = 1 + log10(tf)</div>
+            <div>IDF(t) = log10((N + 1) / (df + 1)) + 1</div>
+            <div>cos(q, d) = (q &middot; d) / (||q|| &middot; ||d||)</div>
+          </div>
+        </div>
+
+        <!-- Card 4: Okapi BM25 -->
+        <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm space-y-3">
+          <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-lg">
+            4
+          </div>
+          <h4 class="font-bold text-slate-900 text-base">Okapi BM25 Ranking Model</h4>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Non-linear probabilistic ranking function incorporating document length normalization:
+          </p>
+          <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 font-mono text-[11px] text-slate-700">
+            BM25(q,d) = &sum; IDF(t) &middot; [f(t,d)&middot;(k1+1)] / [f(t,d) + k1&middot;(1-b + b&middot;|d|/L_avg)]
+          </div>
+          <p class="text-xs text-slate-600">
+            Tuning parameters: $k_1 = 1.5$ (term saturation), $b = 0.75$ (length penalty).
+          </p>
+        </div>
+
+        <!-- Card 5: Query Reformulation & Rocchio -->
+        <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm space-y-3">
+          <div class="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-lg">
+            5
+          </div>
+          <h4 class="font-bold text-slate-900 text-base">Query Reformulation & Rocchio</h4>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Improves retrieval effectiveness using explicit feedback and thesaurus:
+          </p>
+          <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 font-mono text-[11px] text-slate-700">
+            q_new = &alpha;&middot;q_0 + (&beta;/|Dr|)&middot;&sum;dr - (&gamma;/|Dnr|)&middot;&sum;dnr
+          </div>
+          <p class="text-xs text-slate-600">
+            Weights: $\alpha = 1.0, \beta = 0.75, \gamma = 0.25$.
+          </p>
+        </div>
+
+        <!-- Card 6: Evaluation Metrics -->
+        <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm space-y-3">
+          <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg">
+            6
+          </div>
+          <h4 class="font-bold text-slate-900 text-base">IR Effectiveness Evaluation</h4>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Standard metrics used to quantify search quality:
+          </p>
+          <ul class="text-xs text-slate-600 space-y-1 list-disc list-inside">
+            <li><strong>P@K & R@K:</strong> Precision and Recall within top $K$ documents.</li>
+            <li><strong>MAP:</strong> Mean Average Precision over all benchmark queries.</li>
+            <li><strong>NDCG@K:</strong> Normalized Discounted Cumulative Gain with graded relevance (0, 1, 2).</li>
+            <li><strong>MRR:</strong> Mean Reciprocal Rank ($1/\text{rank of first hit}$).</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Viva Q&A Accordion Section -->
+      <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <h3 class="text-base font-bold text-slate-800 flex items-center">
+          <i class="fa-solid fa-clipboard-question text-indigo-600 mr-2"></i> Frequently Asked Viva Voce Questions & Answers
+        </h3>
+
+        <div class="space-y-3 text-xs sm:text-sm">
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
+            <h5 class="font-bold text-slate-900">Q1: Why is BM25 generally superior to basic TF-IDF Cosine Similarity?</h5>
+            <p class="text-slate-600 leading-relaxed">
+              <strong>Answer:</strong> Basic TF-IDF has unbounded term frequency growth. BM25 introduces term frequency saturation ($k_1$), so repeating a word 20 times doesn't give 20x score. Additionally, BM25 normalizes document length using parameter $b$ against the collection's average document length ($L_{avg}$), preventing unfairly penalizing or rewarding long or short documents.
+            </p>
+          </div>
+
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
+            <h5 class="font-bold text-slate-900">Q2: What is the purpose of Latent Semantic Indexing (LSI) in CivicFind?</h5>
+            <p class="text-slate-600 leading-relaxed">
+              <strong>Answer:</strong> Traditional keyword search suffers from <em>synonymy</em> (different words with identical meaning, e.g., "grant" vs "scholarship") and <em>polysemy</em>. LSI computes Truncated SVD over the term-document matrix, mapping terms and documents into a lower-dimensional latent concept space ($k=25$). This enables retrieving documents that share underlying topic semantics even if exact words differ.
+            </p>
+          </div>
+
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
+            <h5 class="font-bold text-slate-900">Q3: How is NDCG (Normalized Discounted Cumulative Gain) calculated?</h5>
+            <p class="text-slate-600 leading-relaxed">
+              <strong>Answer:</strong> NDCG handles graded relevance (e.g. 2 = Highly Relevant, 1 = Partially Relevant, 0 = Irrelevant). It discounts document gains logarithmically based on their rank: $\text{DCG}@K = \sum_{i=1}^K \frac{2^{rel_i} - 1}{\log_2(i + 1)}$. It is normalized by dividing by $\text{IDCG}@K$ (the Ideal DCG sorted descending), producing a score between 0.0 and 1.0.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Full Scheme Dossier Modal Dialog -->
+  <div id="schemeDetailModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 animate-in fade-in zoom-in duration-200">
+      
+      <!-- Modal Header -->
+      <div class="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-start justify-between z-10">
+        <div>
+          <div class="flex items-center space-x-2 mb-1">
+            <span id="modalCategoryBadge" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-sky-100 text-sky-800">Category</span>
+            <span id="modalLevelBadge" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-purple-100 text-purple-800">State</span>
+            <span id="modalIdBadge" class="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-100 text-slate-600">ID</span>
+          </div>
+          <h3 id="modalSchemeName" class="text-lg sm:text-xl font-bold text-slate-900">Scheme Name</h3>
+          <p id="modalDepartment" class="text-xs text-slate-500 mt-0.5">Department Name</p>
+        </div>
+        <button onclick="closeSchemeModal()" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100 transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 space-y-5 text-xs sm:text-sm">
+        
+        <!-- Target Beneficiaries -->
+        <div class="bg-sky-50 border border-sky-100 rounded-xl p-3.5 flex items-start space-x-3">
+          <div class="text-sky-600 text-base mt-0.5"><i class="fa-solid fa-users"></i></div>
+          <div>
+            <span class="font-bold text-sky-900 block text-xs uppercase tracking-wider">Target Beneficiaries</span>
+            <p id="modalTarget" class="text-sky-950 mt-0.5">...</p>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <h4 class="font-bold text-slate-900 mb-1 flex items-center text-xs uppercase tracking-wider text-slate-500">
+            <i class="fa-solid fa-circle-info mr-1.5 text-sky-600"></i> Scheme Overview
+          </h4>
+          <p id="modalDescription" class="text-slate-700 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-100">...</p>
+        </div>
+
+        <!-- Eligibility Criteria -->
+        <div>
+          <h4 class="font-bold text-slate-900 mb-1 flex items-center text-xs uppercase tracking-wider text-slate-500">
+            <i class="fa-solid fa-user-check mr-1.5 text-emerald-600"></i> Eligibility Criteria
+          </h4>
+          <p id="modalEligibility" class="text-slate-700 leading-relaxed bg-emerald-50/50 p-3.5 rounded-xl border border-emerald-100">...</p>
+        </div>
+
+        <!-- Benefits & Financial Assistance -->
+        <div>
+          <h4 class="font-bold text-slate-900 mb-1 flex items-center text-xs uppercase tracking-wider text-slate-500">
+            <i class="fa-solid fa-hand-holding-dollar mr-1.5 text-amber-600"></i> Financial Benefits & Subsidies
+          </h4>
+          <p id="modalBenefits" class="text-slate-700 leading-relaxed bg-amber-50/50 p-3.5 rounded-xl border border-amber-100">...</p>
+        </div>
+
+        <!-- Required Documents -->
+        <div>
+          <h4 class="font-bold text-slate-900 mb-1 flex items-center text-xs uppercase tracking-wider text-slate-500">
+            <i class="fa-solid fa-file-lines mr-1.5 text-purple-600"></i> Mandatory Required Documents
+          </h4>
+          <p id="modalDocuments" class="text-slate-700 leading-relaxed bg-purple-50/50 p-3.5 rounded-xl border border-purple-100">...</p>
+        </div>
+
+        <!-- Application Procedure -->
+        <div>
+          <h4 class="font-bold text-slate-900 mb-1 flex items-center text-xs uppercase tracking-wider text-slate-500">
+            <i class="fa-solid fa-list-ol mr-1.5 text-indigo-600"></i> Application Procedure
+          </h4>
+          <p id="modalProcedure" class="text-slate-700 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-100">...</p>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="sticky bottom-0 bg-slate-50 border-t border-slate-200 px-6 py-3.5 flex items-center justify-between">
+        <span class="text-xs text-slate-500">Source: Official Government Department Registry</span>
+        <div class="flex items-center space-x-2">
+          <button onclick="closeSchemeModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-100 text-xs font-semibold">
+            Close
+          </button>
+          <a id="modalOfficialLink" href="#" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-semibold shadow flex items-center space-x-1.5">
+            <span>Visit Official Portal</span>
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 py-6 text-slate-500 text-xs">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+      <div class="flex items-center space-x-2">
+        <div class="w-6 h-6 rounded bg-sky-600 text-white flex items-center justify-center font-bold text-xs">CF</div>
+        <span class="font-semibold text-slate-700">CivicFind IR Engine</span>
+        <span>&mdash; Academic Information Retrieval Lab Mini Project</span>
+      </div>
+      <div>
+        <span>Models: Vector Space Model &middot; Okapi BM25 &middot; Boolean &middot; Semantic LSI &middot; Hybrid</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- App Script -->
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

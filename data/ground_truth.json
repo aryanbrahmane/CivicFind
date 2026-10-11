@@ -1,0 +1,243 @@
+[
+  {
+    "query_id": "Q01",
+    "query": "scholarships for engineering college students in maharashtra",
+    "category": "Education",
+    "intent": "Find higher education scholarships and fee reimbursements for engineering and technical students in Maharashtra.",
+    "relevant_docs": [
+      "SCH-EDU-001",
+      "SCH-EDU-002",
+      "SCH-EDU-003",
+      "SCH-EDU-004",
+      "SCH-EDU-005",
+      "SCH-EDU-009"
+    ],
+    "graded_relevance": {
+      "SCH-EDU-001": 2,
+      "SCH-EDU-005": 2,
+      "SCH-EDU-004": 2,
+      "SCH-EDU-002": 1,
+      "SCH-EDU-003": 1,
+      "SCH-EDU-009": 1
+    }
+  },
+  {
+    "query_id": "Q02",
+    "query": "financial assistance subsidies for small farmers in maharashtra",
+    "category": "Agriculture",
+    "intent": "Find direct income support, financial grants, and input subsidies for farmers in Maharashtra.",
+    "relevant_docs": [
+      "SCH-AGR-001",
+      "SCH-AGR-002",
+      "SCH-AGR-003",
+      "SCH-AGR-006",
+      "SCH-AGR-007",
+      "SCH-AGR-010"
+    ],
+    "graded_relevance": {
+      "SCH-AGR-001": 2,
+      "SCH-AGR-002": 2,
+      "SCH-AGR-003": 2,
+      "SCH-AGR-006": 1,
+      "SCH-AGR-007": 1,
+      "SCH-AGR-010": 1
+    }
+  },
+  {
+    "id": "Q03",
+    "query_id": "Q03",
+    "query": "cashless hospital surgery health insurance schemes",
+    "category": "Healthcare",
+    "intent": "Find government medical insurance providing free/cashless hospital admission and surgeries.",
+    "relevant_docs": [
+      "SCH-HLT-001",
+      "SCH-HLT-002",
+      "SCH-HLT-006",
+      "SCH-HLT-009",
+      "SCH-HLT-016"
+    ],
+    "graded_relevance": {
+      "SCH-HLT-001": 2,
+      "SCH-HLT-002": 2,
+      "SCH-HLT-006": 2,
+      "SCH-HLT-009": 1,
+      "SCH-HLT-016": 1
+    }
+  },
+  {
+    "query_id": "Q04",
+    "query": "financial aid monthly cash assistance for women in maharashtra",
+    "category": "Women and Child Welfare",
+    "intent": "Discover monthly DBT cash transfer schemes empowering women financially.",
+    "relevant_docs": [
+      "SCH-WOM-001",
+      "SCH-WOM-004",
+      "SCH-WOM-006",
+      "SCH-WOM-007",
+      "SCH-SOC-001"
+    ],
+    "graded_relevance": {
+      "SCH-WOM-001": 2,
+      "SCH-WOM-004": 2,
+      "SCH-SOC-001": 1,
+      "SCH-WOM-006": 1,
+      "SCH-WOM-007": 1
+    }
+  },
+  {
+    "query_id": "Q05",
+    "query": "unemployed youth skill development apprenticeship training and stipend",
+    "category": "Employment and Skill Development",
+    "intent": "Find job training, industrial apprenticeship, and stipend programs for educated youth.",
+    "relevant_docs": [
+      "SCH-EMP-001",
+      "SCH-EMP-002",
+      "SCH-EMP-003",
+      "SCH-EMP-005",
+      "SCH-EMP-009",
+      "SCH-EMP-007"
+    ],
+    "graded_relevance": {
+      "SCH-EMP-001": 2,
+      "SCH-EMP-005": 2,
+      "SCH-EMP-009": 2,
+      "SCH-EMP-002": 1,
+      "SCH-EMP-003": 1,
+      "SCH-EMP-007": 1
+    }
+  },
+  {
+    "query_id": "Q06",
+    "query": "pucca housing assistance subsidy for low income urban rural poor",
+    "category": "Housing and Urban Development",
+    "intent": "Discover government housing schemes providing grants or interest subsidies for constructing pucca houses.",
+    "relevant_docs": [
+      "SCH-HOU-001",
+      "SCH-HOU-002",
+      "SCH-HOU-003",
+      "SCH-HOU-004",
+      "SCH-HOU-006"
+    ],
+    "graded_relevance": {
+      "SCH-HOU-001": 2,
+      "SCH-HOU-002": 2,
+      "SCH-HOU-003": 2,
+      "SCH-HOU-004": 1,
+      "SCH-HOU-006": 1
+    }
+  },
+  {
+    "query_id": "Q07",
+    "query": "collateral free business loans for micro small enterprises and shopkeepers",
+    "category": "Entrepreneurship and MSME",
+    "intent": "Find collateral-free bank loans and credit guarantee programs for micro businesses.",
+    "relevant_docs": [
+      "SCH-ENT-001",
+      "SCH-ENT-002",
+      "SCH-ENT-003",
+      "SCH-HOU-005",
+      "SCH-EMP-004"
+    ],
+    "graded_relevance": {
+      "SCH-ENT-001": 2,
+      "SCH-ENT-003": 2,
+      "SCH-ENT-002": 2,
+      "SCH-HOU-005": 1,
+      "SCH-EMP-004": 1
+    }
+  },
+  {
+    "query_id": "Q08",
+    "query": "monthly pension financial support for senior citizens aged 65 and above",
+    "category": "Social Security and Pensions",
+    "intent": "Find old age pension and regular monthly financial aid for senior citizens.",
+    "relevant_docs": [
+      "SCH-SOC-002",
+      "SCH-SOC-003",
+      "SCH-SOC-001",
+      "SCH-SOC-004",
+      "SCH-SOC-008"
+    ],
+    "graded_relevance": {
+      "SCH-SOC-002": 2,
+      "SCH-SOC-003": 2,
+      "SCH-SOC-001": 1,
+      "SCH-SOC-004": 1,
+      "SCH-SOC-008": 1
+    }
+  },
+  {
+    "query_id": "Q09",
+    "query": "assistive devices motorized tricycle and support for disabled persons",
+    "category": "Disability Welfare",
+    "intent": "Find physical aids, appliances, wheelchairs, and grants for differently-abled citizens.",
+    "relevant_docs": [
+      "SCH-DIS-001",
+      "SCH-DIS-002",
+      "SCH-DIS-003",
+      "SCH-DIS-005",
+      "SCH-SOC-005"
+    ],
+    "graded_relevance": {
+      "SCH-DIS-001": 2,
+      "SCH-DIS-002": 2,
+      "SCH-SOC-005": 1,
+      "SCH-DIS-003": 1,
+      "SCH-DIS-005": 1
+    }
+  },
+  {
+    "query_id": "Q10",
+    "query": "rooftop solar panel subsidy free electricity for residential homes",
+    "category": "Public Services and Citizen Welfare",
+    "intent": "Find government capital subsidies for installing rooftop solar systems and zero electricity bills.",
+    "relevant_docs": [
+      "SCH-PUB-001",
+      "SCH-AGR-004",
+      "SCH-AGR-005",
+      "SCH-PUB-008"
+    ],
+    "graded_relevance": {
+      "SCH-PUB-001": 2,
+      "SCH-AGR-004": 1,
+      "SCH-AGR-005": 1,
+      "SCH-PUB-008": 1
+    }
+  },
+  {
+    "query_id": "Q11",
+    "query": "maternity benefit nutritious diet grant for pregnant women and lactating mothers",
+    "category": "Healthcare",
+    "intent": "Find cash incentives and nutrition support during pregnancy and child birth.",
+    "relevant_docs": [
+      "SCH-HLT-003",
+      "SCH-HLT-014",
+      "SCH-HLT-020",
+      "SCH-WOM-008"
+    ],
+    "graded_relevance": {
+      "SCH-HLT-003": 2,
+      "SCH-HLT-014": 2,
+      "SCH-WOM-008": 1,
+      "SCH-HLT-020": 1
+    }
+  },
+  {
+    "query_id": "Q12",
+    "query": "education loan subsidy interest waiver for higher studies",
+    "category": "Education",
+    "intent": "Find interest subvention and educational loan assistance portals.",
+    "relevant_docs": [
+      "SCH-EDU-014",
+      "SCH-EDU-001",
+      "SCH-EDU-003",
+      "SCH-EDU-018"
+    ],
+    "graded_relevance": {
+      "SCH-EDU-014": 2,
+      "SCH-EDU-018": 1,
+      "SCH-EDU-001": 1,
+      "SCH-EDU-003": 1
+    }
+  }
+]

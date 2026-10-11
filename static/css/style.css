@@ -1,0 +1,124 @@
+/* CivicFind Modern Information Retrieval Stylesheet */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+code, pre, .font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Nav Tabs */
+.nav-tab {
+  color: #475569;
+  font-weight: 500;
+  transition: all 0.15s ease-in-out;
+}
+
+.nav-tab:hover {
+  background-color: #f1f5f9;
+  color: #0369a1;
+}
+
+.active-tab {
+  background-color: #e0f2fe !important;
+  color: #0369a1 !important;
+  font-weight: 700;
+}
+
+/* View Sections visibility */
+.tab-view {
+  display: none;
+}
+
+.active-view {
+  display: block;
+  animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Query Chips */
+.query-chip {
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.72rem;
+  transition: all 0.15s ease;
+}
+
+.query-chip:hover {
+  transform: translateY(-1px);
+}
+
+/* Search Result Card */
+.result-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.result-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+}
+
+/* Relevance Percentage Badges */
+.rel-high {
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  color: #065f46;
+  border-color: #a7f3d0;
+}
+
+.rel-medium {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  color: #1e40af;
+  border-color: #bfdbfe;
+}
+
+.rel-fair {
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+/* Pipeline Step Cards */
+.pipeline-step-card {
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s ease;
+}
+
+.pipeline-step-card:hover {
+  border-color: #38bdf8;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
