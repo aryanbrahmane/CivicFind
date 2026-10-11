@@ -21,6 +21,17 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SCHEMES_FILE = os.path.join(BASE_DIR, "data", "schemes.json")
 GROUND_TRUTH_FILE = os.path.join(BASE_DIR, "data", "ground_truth.json")
 
+# Ensure NLTK resources are available in cloud deployment environment
+try:
+    import nltk
+    for pkg in ['stopwords', 'punkt', 'punkt_tab', 'wordnet']:
+        try:
+            nltk.data.find(f'corpora/{pkg}' if pkg in ['stopwords', 'wordnet'] else f'tokenizers/{pkg}')
+        except LookupError:
+            nltk.download(pkg, quiet=True)
+except Exception as e:
+    print(f"NLTK cloud check note: {e}")
+
 # Global IR Engine Singletons
 print("Loading CivicFind datasets and initializing IR Engine...")
 with open(SCHEMES_FILE, "r", encoding="utf-8") as f:
@@ -298,4 +309,5 @@ def suggest_terms():
     return jsonify(matches)
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
