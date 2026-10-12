@@ -161,51 +161,7 @@ The system includes an automated evaluation benchmark over **12 test queries** w
 
 ---
 
-## 📁 5. Directory Structure
-
-```
-d:\AB's Docs\CivicFind draft\
-├── app.py                     # Main Flask web application & REST API
-├── run.py                     # Interactive startup runner
-├── requirements.txt           # Python dependencies
-├── README.md                  # Comprehensive Lab & Viva Guide
-│
-├── data/
-│   ├── schemes.json           # 174 verified Government schemes dataset
-│   ├── ground_truth.json      # 12 benchmark test queries with graded relevance
-│   ├── build_dataset.py       # Script that compiled the scheme repository
-│   └── build_ground_truth.py  # Script that generated ground truth judgments
-│
-├── ir_engine/
-│   ├── __init__.py            # Package interface
-│   ├── preprocessor.py        # Tokenizer, Stopwords, Stemmer, Lemmatizer, Trace
-│   ├── indexer.py             # Positional Inverted Index, stats, wildcards, edit distance
-│   ├── query_reformulation.py # Thesaurus expansion, Rocchio feedback, spelling correction
-│   ├── evaluation.py          # Precision@K, Recall@K, F1@K, MAP, NDCG@K, MRR metrics
-│   └── models/
-│       ├── __init__.py
-│       ├── vsm.py             # Vector Space Model (TF-IDF & Cosine Similarity)
-│       ├── bm25.py            # Okapi BM25 Ranking Algorithm
-│       ├── boolean.py         # Boolean Retrieval Engine (AND, OR, NOT)
-│       ├── semantic.py        # Latent Semantic Indexing (Truncated SVD)
-│       └── hybrid.py          # Hybrid (Lexical + Semantic combination)
-│
-├── templates/
-│   └── index.html             # Single-Page Application UI with Tabbed Views
-│
-├── static/
-│   ├── css/
-│   │   └── style.css          # Custom styling, animations, and typography
-│   └── js/
-│       └── app.js             # Client search controller, Rocchio feedback, Chart.js
-│
-└── tests/
-    └── test_system.py         # Automated unit & integration tests (9 test cases)
-```
-
----
-
-## 🚀 6. Installation & Quick Start
+## 🚀 5. Installation & Quick Start
 
 ### 6.1 Prerequisites
 - Python 3.10 or higher
@@ -223,32 +179,7 @@ Open your browser and navigate to:
 http://127.0.0.1:5000
 ```
 
----
-
-## 🎓 7. Lab Viva Voce Preparation Guide
-
-### Q1: What is the difference between Document Frequency ($df$) and Collection Frequency ($cf$)?
-- **Document Frequency ($df$):** The number of *documents* in the collection containing term $t$.
-- **Collection Frequency ($cf$):** The *total number of times* term $t$ appears across the entire collection.
-- In inverted index postings, $df$ determines the length of the postings list, while $cf$ is the sum of all term frequencies ($tf$).
-
-### Q2: Why does Okapi BM25 perform better than standard TF-IDF Cosine similarity?
-1. **Term Frequency Saturation:** In standard TF-IDF, higher frequency linearly increases weight. BM25 uses an asymptotic ceiling: $\frac{f(t, d) \cdot (k_1 + 1)}{f(t, d) + k_1 \cdot \text{len\_norm}}$, preventing word repetition manipulation.
-2. **Document Length Normalization:** Long documents naturally contain more words. Parameter $b$ penalizes overly long documents and normalizes against $L_{avg}$.
-
-### Q3: How does the Rocchio Algorithm adapt the query vector?
-$$\vec{q}_{new} = \alpha \vec{q}_0 + \frac{\beta}{|D_r|} \sum_{d \in D_r} \vec{d} - \frac{\gamma}{|D_{nr}|} \sum_{d \in D_{nr}} \vec{d}$$
-It moves the query vector closer to the centroid of documents marked **relevant** ($\beta$) and away from the centroid of documents marked **non-relevant** ($\gamma$).
-
-### Q4: How is NDCG calculated and why is it preferred for ranked evaluation?
-- **DCG (Discounted Cumulative Gain):** Penalizes relevant documents that appear further down in the rank list using logarithmic discount:
-  $$\text{DCG}@K = \sum_{i=1}^K \frac{2^{rel_i} - 1}{\log_2(i + 1)}$$
-- **IDCG (Ideal DCG):** The DCG of the theoretically perfect ranking (sorted by graded relevance descending).
-- **NDCG:** $\frac{\text{DCG}@K}{\text{IDCG}@K}$, producing a standardized score between $0.0$ and $1.0$.
-
----
-
-## 📜 8. Project Authors & Lab Submission
+## 📜 6. Project Authors
 - **Project Title:** CIVICFIND — An Intelligent Information Retrieval System for Government Schemes and Public Services
 - **Domain:** Natural Language Processing & Information Retrieval (IR)
 - **Frameworks:** Python, Flask, NLTK, scikit-learn, Chart.js, Tailwind CSS
